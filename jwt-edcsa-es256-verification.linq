@@ -61,6 +61,9 @@
   <Namespace>System.Security.Cryptography.X509Certificates</Namespace>
 </Query>
 
+//https://www.scottbrady91.com/C-Sharp/JWT-Signing-using-ECDSA-in-dotnet-Core
+//https://github.com/scottbrady91/Blog-Example-Classes/tree/master/EcdsaJwtSigning
+//https://github.com/smuthiya/EcdsaJwtSigning/blob/master/Program.cs
 async Task Main()
 {   
     // Obtain a JWT to validate and put it in here
