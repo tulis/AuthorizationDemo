@@ -10,7 +10,8 @@ namespace AuthorizationDemo
         //https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization
         public static async Task Main(string[] args)
         {
-            var authorizer = new Auth0Authorizer();
+            //var authorizer = new Auth0Authorizer();
+            var authorizer = new AwsAlbAuthorizer();
 
             await authorizer.Authorize();
 
