@@ -21,6 +21,11 @@ namespace AuthorizationDemo
         public async Task Authorize()
         {
             // Obtain a JWT to validate and put it in here
+            // Apparently this JWT (JWS) from AWS Application Load Balancer (ALB) (x-amzn-oidc-data) is invalid format
+            // According to the specification, Base64 encoding should omit trailing '=', but in this token by AWS ALB includes trailing '='
+            // https://tools.ietf.org/html/rfc7515#section-2 (Terminology)
+            // https://tools.ietf.org/html/rfc7515#appendix-C (Notes on Implementing base64url Encoding without Padding)
+            // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html
             const string testToken = @"eyJ0eXAiOiJKV1QiLCJraWQiOiI0YTAwM2NkYS01YmQ1LTQ2M2QtOTZhOC1iZDYwOGI5ZTgyZTUiLCJhbGciOiJFUzI1NiIsImlzcyI6Imh0dHBzOi8vY29nbml0by1pZHAuYXAtc291dGhlYXN0LTIuYW1hem9uYXdzLmNvbS9hcC1zb3V0aGVhc3QtMl93OUgyVmRQb2EiLCJjbGllbnQiOiJtYnNhZTVydHRyM2dmMzV0cjExazcwZ2doIiwic2lnbmVyIjoiYXJuOmF3czplbGFzdGljbG9hZGJhbGFuY2luZzphcC1zb3V0aGVhc3QtMjo3ODk0NjIyODkzMjQ6bG9hZGJhbGFuY2VyL2FwcC9hbGljZWJvYi1wcmVkaWN0b3IvNDBlYmNkM2NlMzUzOWMzMCIsImV4cCI6MTU0MjMzODkyMn0=.eyJzdWIiOiIyYmRmZTcyOC0yNmY5LTRlNDAtYmNmYy1jMjY1MTQ1NzYxOTYiLCJlbWFpbF92ZXJpZmllZCI6InRydWUiLCJiaXJ0aGRhdGUiOiIwMS8wMS8yMDAwIiwiZW1haWwiOiJ0c3VyeWF0aSthYnVzZXJwb29sLjAwMUBhc3NldGljLmNvbSIsInVzZXJuYW1lIjoiMmJkZmU3MjgtMjZmOS00ZTQwLWJjZmMtYzI2NTE0NTc2MTk2In0=.K1Uufn36oT7sh38ERVtG3w9a33rhbpTaL7vJpPytAuGrmYqe6zo90W8qnf9xXUwFGf_sLt5Lzvf0YeyLZPwp4g==";
 
             try
