@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,8 +11,11 @@ namespace AuthorizationDemo
         //https://auth0.com/docs/quickstart/backend/aspnet-core-webapi/01-authorization
         public static async Task Main(string[] args)
         {
+            IdentityModelEventSource.ShowPII = true;
+
             //var authorizer = new Auth0Authorizer();
             var authorizer = new AwsAlbAuthorizer();
+            //var authorizer = new EcdsaJwtAuthorizer();
 
             await authorizer.Authorize();
 
