@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -39,7 +40,10 @@ namespace AuthorizationDemo
 
                 // Now validate the token. If the token is not valid for any reason, an exception will be thrown by the method
                 var handler = new JwtSecurityTokenHandler();
-                var user = handler.ValidateToken(testToken, validationParameters, out SecurityToken validatedToken);
+                var token = String.Join(".", testToken
+                    .Split(".")
+                    .Select(splittedToken => Base64UrlEncoding(splittedToken)));
+                var user = handler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
                 // The ValidateToken method above will return a ClaimsPrincipal. Get the user ID from the NameIdentifier claim
                 // (The sub claim from the JWT will be translated to the NameIdentifier claim)
                 Console.WriteLine($"Token is validated. User Id {user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value}");
@@ -59,7 +63,7 @@ namespace AuthorizationDemo
             var jwtHeaders = token.Split('.')[0];
             var decodedJwtHeaders = Encoding.UTF8.GetString(Convert.FromBase64String(jwtHeaders));
             dynamic decodedJsonJwtHeaders = JsonConvert.DeserializeObject<ExpandoObject>(decodedJwtHeaders);
-            var keyId = decodedJsonJwtHeaders.kid;
+            var keyId = ((IDictionary<String, Object>)decodedJsonJwtHeaders)["kid"].ToString();
             return keyId;
         }
 
@@ -84,7 +88,8 @@ namespace AuthorizationDemo
                 var base64PublicKey = (await httpClient
                     .GetStringAsync($@"https://public-keys.auth.elb.ap-southeast-2.amazonaws.com/{keyId}"))
                 .Replace(oldValue: "-----BEGIN PUBLIC KEY-----", newValue: String.Empty)
-                .Replace(oldValue: "-----END PUBLIC KEY-----", newValue: String.Empty);
+                .Replace(oldValue: "-----END PUBLIC KEY-----", newValue: String.Empty)
+                .Trim();
 
                 byte[] subjectPublicKeyInfo = Convert.FromBase64String(base64PublicKey);
 
@@ -112,6 +117,14 @@ namespace AuthorizationDemo
 
                 return cngBlob;
             }
+        }
+
+        static string Base64UrlEncoding(string base64encoding)
+        {
+            base64encoding = base64encoding.Split('=')[0]; // Remove any trailing '='s
+            base64encoding = base64encoding.Replace('+', '-'); // 62nd char of encoding
+            base64encoding = base64encoding.Replace('/', '_'); // 63rd char of encoding
+            return base64encoding;
         }
     }
 }
